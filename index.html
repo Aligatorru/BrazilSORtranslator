@@ -129,9 +129,27 @@
 
     <!-- Подключаем необходимые библиотеки для работы с DOCX прямо в браузере -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.37.11/docxtemplater.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pizzip/3.1.4/pizzip.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pizzip/3.1.4/pizzip-utils.js"></script>
+    <script src="https://unpkg.com/pizzip@3.1.7/dist/pizzip.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script>
+        window.PizZipUtils = window.PizZipUtils || {
+            getBinaryContent: function(url, callback) {
+                fetch(url)
+                    .then(function(response) {
+                        if (!response.ok) {
+                            throw new Error('HTTP ' + response.status + ' while loading ' + url);
+                        }
+                        return response.arrayBuffer();
+                    })
+                    .then(function(content) {
+                        callback(null, content);
+                    })
+                    .catch(function(error) {
+                        callback(error);
+                    });
+            }
+        };
+    </script>
 </head>
 <body>
 
@@ -411,7 +429,7 @@
                 <div id="customDetailsBlock" class="hidden" style="background: #fdfefe; padding: 15px; border-radius: 6px; border: 1px dashed var(--border-color);">
                     <div class="form-group">
                         <label>Текст перевода основания/причины:</label>
-                        <textarea id="custom_reason">Свидетельство выдано без безвозмездно для сторон</textarea>
+                        <textarea id="custom_reason">Свидетельство выдано безвозмездно</textarea>
                     </div>
                 </div>
             </div>
@@ -565,7 +583,7 @@
             'child_name','child_surname','child_cpf','act_number','birth_date_picker','birth_date_text','birth_time','birth_city','birth_state','birth_hospital','child_gender',
             'father_name','father_country','father_country_other','father_state','gfather_pat','gmother_pat',
             'mother_name','mother_country','mother_country_other','mother_state','gfather_mat','gmother_mat',
-            'twins','dn_number','reg_date_text','notes_block','cartor_info','cartor_pay','state_pay','fee_pay','all_pay','receipt_num','custom_reason',
+            'twins','dn_number','reg_date_picker','reg_date_text','notes_block','cartor_info','sorType','cartor_pay','state_pay','fee_pay','all_pay','receipt_num','custom_reason',
             'blank_number','ap_country','ap_signed_by','ap_role','ap_stamp_owner','ap_city','ap_date','ap_officer','ap_idx','ap_doc_owner','ap_qr_num','ap_check_code','ap_bottom_num'
         ];
     }
