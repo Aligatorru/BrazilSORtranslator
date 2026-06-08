@@ -125,6 +125,20 @@
             font-size: 13px;
         }
         .instructions code { background: #eee; padding: 2px 4px; border-radius: 4px; font-family: monospace; }
+        .cache-notice {
+            background: #fff8e1;
+            border: 1px solid #f1c40f;
+            border-radius: 8px;
+            color: #6b4f00;
+            font-size: 14px;
+            margin-top: 18px;
+            padding: 12px 14px;
+        }
+        .btn-secondary {
+            background: #7f8c8d;
+            margin-left: 10px;
+        }
+        .btn-secondary:hover { background: #707b7c; }
     </style>
 
     <!-- Подключаем необходимые библиотеки для работы с DOCX прямо в браузере -->
@@ -166,8 +180,13 @@
             <a href="https://t.me/Real_BraveHeart" target="_blank">@Real_BraveHeart</a>
         </div>
         
+        <div id="cacheRestoredNotice" class="cache-notice hidden">
+            Страница восстановлена из кэша. Если это были тестовые данные, очистите форму и начните заново.
+        </div>
+        
         <br><br>
         <button class="btn" onclick="startConfigurator()">Начать заполнение</button>
+        <button class="btn btn-secondary" onclick="clearFormCache()">Очистить форму</button>
     </header>
 
     <!-- СТРАНИЦА КОНФИГУРАТОРА (СКРЫТА ПО УМОЛЧАНИЮ) -->
@@ -527,11 +546,27 @@
 </div>
 
 <script>
+    var formRestoredFromCache = false;
+    var cacheSavePaused = false;
+
     // Переключение между стартовым экраном и конфигуратором
     function startConfigurator() {
         document.getElementById('startPage').classList.add('hidden');
         document.getElementById('configuratorPage').classList.remove('hidden');
         syncOwnerName();
+    }
+
+    function updateCacheRestoredNotice() {
+        var notice = document.getElementById('cacheRestoredNotice');
+        if (!notice) return;
+        notice.classList.toggle('hidden', !formRestoredFromCache);
+    }
+
+    function clearFormCache() {
+        if (window.localStorage) {
+            localStorage.removeItem('sorConfigData');
+        }
+        window.location.reload();
     }
 
     // Показ полей в зависимости от типа оплаты СОР
@@ -589,6 +624,7 @@
     }
 
     function saveFormDataToCache() {
+        if (cacheSavePaused) return;
         if (!window.localStorage) return;
         var data = {};
         getFormFieldIds().forEach(function(id) {
@@ -605,6 +641,7 @@
             var saved = localStorage.getItem('sorConfigData');
             if (!saved) return;
             var data = JSON.parse(saved);
+            formRestoredFromCache = true;
             Object.keys(data).forEach(function(id) {
                 var el = document.getElementById(id);
                 if (!el) return;
@@ -720,10 +757,16 @@
     }
 
     window.addEventListener('DOMContentLoaded', function() {
-        loadFormDataFromCache();
-        initFormCacheListeners();
-        toggleSorTypeDetails();
-        syncOwnerName();
+        cacheSavePaused = true;
+        try {
+            loadFormDataFromCache();
+            initFormCacheListeners();
+            toggleSorTypeDetails();
+            syncOwnerName();
+            updateCacheRestoredNotice();
+        } finally {
+            cacheSavePaused = false;
+        }
     });
 
     // Преобразование дат в текстовую форму на русском языке
@@ -870,10 +913,26 @@
             }
 
             var zip = new PizZip(content);
-            var doc = new window.docxtemplater(zip, {
-                paragraphLoop: true,
-                linebreaks: true
-            });
+            var doc;
+            try {
+                doc = new window.docxtemplater(zip, {
+                    paragraphLoop: true,
+                    linebreaks: true,
+                    delimiters: {
+                        start: '{{',
+                        end: '}}'
+                    }
+                });
+            } catch (error) {
+                console.error('Ошибка компиляции шаблона DOCX:', error);
+                if (error.properties && error.properties.errors) {
+                    console.table(error.properties.errors.map(function(templateError) {
+                        return templateError.properties || templateError;
+                    }));
+                }
+                alert('Произошла ошибка в шаблоне DOCX. Проверьте метки {{...}} в template.docx.');
+                return;
+            }
 
             // Формируем блок оплаты в зависимости от выбора
             var paymentText = "";
