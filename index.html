@@ -119,9 +119,10 @@
 
         textarea {
             min-height: 80px;
-            overflow: auto;
+            overflow-y: hidden;
             resize: vertical;
             line-height: 1.5;
+            transition: height 0.1s ease;
         }
         .uppercase-input { text-transform: uppercase; }
 
@@ -372,7 +373,7 @@
         </div>
         
         <br><br>
-        <button class="btn" onclick="startConfigurator()">Начать заполнение</button>
+        <button class="btn" id="startFormBtn" onclick="startConfigurator()">Начать заполнение</button>
         <!-- <button class="btn btn-secondary" onclick="clearFormCache()">Очистить форму</button> -->
         <button class="btn btn-secondary hidden" id="clearCacheBtn" onclick="clearFormCache()">Очистить форму</button>
     </header>
@@ -410,7 +411,7 @@
 
         <!-- РАЗДЕЛ 1: Постановка данных по городам -->
         <div class="card">
-            <h2>1. Постановка данных по городам</h2>
+            <h2>Постановка данных по городам</h2>
             <div class="form-row">
                 <div class="form-col">
                     <label>Выберите город:</label>
@@ -573,7 +574,7 @@
                 <div class="form-col">
                     <label>Штат/Регион отца:</label>
                     <span class="field-hint">UF</span>
-                    <input type="text" id="father_state" value="За пределами Бразилии">
+                    <input type="text" id="father_state" value="За пределами Бразилии" placeholder="За пределами Бразилии">
                 </div>
             </div>
             <div class="form-row">
@@ -612,7 +613,7 @@
                 <div class="form-col">
                     <label>Штат/Регион матери:</label>
                     <span class="field-hint">UF</span>
-                    <input type="text" id="mother_state" value="За пределами Бразилии">
+                    <input type="text" id="mother_state" value="За пределами Бразилии" placeholder="За пределами Бразилии">
                 </div>
             </div>
             <div class="form-row">
@@ -678,7 +679,7 @@
             <div class="form-group">
                 <label>Отметки / Внесенные записи:</label>
                 <span class="field-hint">Anotações / Averbações</span>
-                <textarea id="notes_block">Записано в книге А-123, страница 123, под номером 123456. Иных сведений для заверения нет.</textarea>
+                <textarea id="notes_block" placeholder="Записано в книге А-123, страница 123, под номером 123456. Иных сведений для заверения нет.">Записано в книге А-123, страница 123, под номером 123456. Иных сведений для заверения нет.</textarea>
             </div>
         </div>
 
@@ -687,7 +688,7 @@
             <h2>4. Сведения о Нотариальной конторе (Карторио)</h2>
             <div class="form-group">
                 <label>Информация о Карторио:</label>
-                <textarea id="cartor_info" style="min-height: 120px;"></textarea>
+                <textarea id="cartor_info" style="min-height: 120px;" placeholder="Номер в Национальном реестре нотариальных и регистрационных учреждений № 122671&#10;Отдел регистрации актов гражданского состояния физических лиц г. Сантус – 2-й подокруг&#10;Алдир Паскоал Монте Беллу – сотрудник отдела ЗАГС&#10;Адрес: пр-т Ав. Вашингтон Луиз, 61, Вила Матиас г. Сантус, штат Сан-Паулу&#10;Индекс: 11050201, Телефон: (013) 3234-2811&#10;Электронная почта: registrocivil2@uol.com.br"></textarea>
             </div>
 
             <div class="form-row">
@@ -701,19 +702,19 @@
 
             <div class="form-group">
                 <label>Текст штампа Карторио:</label>
-                <textarea id="cartor_stamp" style="min-height: 100px;"></textarea>
+                <textarea id="cartor_stamp" style="min-height: 100px;" placeholder="(штамп)&#10;2-й ПОДОКРУГ&#10;ОТДЕЛ РЕГИСТРАЦИИ АКТОВ ГРАЖДАНСКОГО СОСТОЯНИЯ ФИЗИЧЕСКИХ ЛИЦ&#10;КАРТОРИО МОНТЕ БЕЛЛУ&#10;ПР-Т АВ. ВАШИНГТОН ЛУИЗ, 61 (КАНАЛ 3)&#10;ИНДЕКС 11050-201&#10;САНТУС, САН-ПАУЛУ"></textarea>
             </div>
 
             <hr style="margin:20px 0; border:0; border-top:1px solid var(--border-color);">
 
             <div class="form-group">
                 <label>Блок удостоверения сотрудником:</label>
-                <textarea id="certify_block" style="min-height: 100px;"></textarea>
+                <textarea id="certify_block" style="min-height: 100px;" placeholder="Содержание свидетельства соответствует действительности. Удостоверяю.&#10;гор. Сантус, Сан-Паулу, 22 декабря 2025 г.&#10;(Подпись)&#10;Виктор Угу Бриту Симоне Франса – Сотрудник отдела ЗАГС"></textarea>
             </div>
 
             <div class="form-group">
                 <label>Текст штампа сотрудника:</label>
-                <textarea id="officer_stamp" style="min-height: 80px;"></textarea>
+                <textarea id="officer_stamp" style="min-height: 80px;" placeholder="(штамп)&#10;Виктор Угу Бриту Симоне Франса&#10;Сотрудник отдела ЗАГС&#10;2-го подокруга г. Сантус, шт. Сан-Паулу"></textarea>
             </div>
 
             <!--Тип СОР и оплаты -->
@@ -796,7 +797,7 @@
                 </div>
                 <div class="form-col">
                     <label>4. Скреплен печатью/штампом:</label>
-                    <textarea id="ap_stamp_owner" rows="3"></textarea>
+                    <textarea id="ap_stamp_owner" rows="3" placeholder="ОТДЕЛ РЕГИСТРАЦИИ АКТОВ ГРАЖДАНСКОГО СОСТОЯНИЯ ФИЗИЧЕСКИХ ЛИЦ 2 ГО ПОДОКРУГА Г. САНТУС, ШТАТ САН-ПАУЛУ"></textarea>
                 </div>
             </div>
             <div class="form-row">
@@ -964,6 +965,7 @@
         if (template.ap_stamp_owner) document.getElementById('ap_stamp_owner').value = template.ap_stamp_owner;
         if (template.ap_city) document.getElementById('ap_city').value = template.ap_city;
         if (template.ap_officer) document.getElementById('ap_officer').value = template.ap_officer;
+        resizeAllTextareas();
     }
 
     function updateCityPresetBlock() {
@@ -1252,6 +1254,7 @@
     function updateCacheRestoredNotice() {
             var notice = document.getElementById('cacheRestoredNotice');
             var clearBtn = document.getElementById('clearCacheBtn'); // Находим нашу кнопку
+            var startBtn = document.getElementById('startFormBtn');
             
             if (!notice) return;
             
@@ -1260,6 +1263,10 @@
             
             if (clearBtn) {
                 clearBtn.classList.toggle('hidden', !formRestoredFromCache);
+            }
+            
+            if (startBtn) {
+                startBtn.textContent = formRestoredFromCache ? 'Продолжить заполнение' : 'Начать заполнение';
             }
         }
 
