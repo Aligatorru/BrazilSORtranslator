@@ -815,10 +815,32 @@
                     <label>7. Кем выдан апостиль:</label>
                     <input type="text" id="ap_officer" placeholder="Силмара Чиамулера Лопес">
                 </div>
+                <div class="form-col">
+                    <label>8. Порядковый номер Апостиля:</label>
+                    <!-- <input type="text" id="ap_idx" value="1234567-89"> -->
+                    <input type="text" id="ap_idx" class="uppercase-input" placeholder="1234567-89" oninput="syncApostilleQrNumber()">
+                </div>
             </div>
             <div class="form-group">
                 <label>Имя владельца документа:</label>
                 <input type="text" id="ap_doc_owner" value="">
+            </div>
+            <div class="form-row">
+                <div class="form-col">
+                    <label>Номер QR-кода справа:</label>
+                    <!-- <input type="text" id="ap_qr_num" value="1234567-89"> -->
+                    <input type="text" id="ap_qr_num" class="uppercase-input" placeholder="1234567-89" oninput="markApostilleQrNumberEdited()">
+                </div>
+                <div class="form-col">
+                    <label>Контрольный проверочный код:</label>
+                    <!-- <input type="text" id="ap_check_code" value="FD123B45"> -->
+                    <input type="text" id="ap_check_code" class="uppercase-input" placeholder="FD123B45">
+                </div>
+                <div class="form-col">
+                    <label>Серийный номер справа снизу:</label>
+                    <!-- <input type="text" id="ap_bottom_num" value="BR 123456 012345678"> -->
+                    <input type="text" id="ap_bottom_num" class="uppercase-input" placeholder="BR 123456 012345678">
+                </div>
             </div>
         </div>
 
@@ -845,6 +867,8 @@
 <script>
     var formRestoredFromCache = false;
     var cacheSavePaused = false;
+    var apQrNumManuallyEdited = false;
+    var lastSyncedApIdx = '';
 
     var cityManifestEntries = {};
     var cityTemplates = {
@@ -1308,6 +1332,24 @@
         saveFormDataToCache();
     }
 
+    function syncApostilleQrNumber() {
+        var apIdxEl = document.getElementById('ap_idx');
+        var qrEl = document.getElementById('ap_qr_num');
+        if (!apIdxEl || !qrEl) return;
+        lastSyncedApIdx = apIdxEl.value;
+        if (!apQrNumManuallyEdited || qrEl.value === lastSyncedApIdx) {
+            qrEl.value = lastSyncedApIdx;
+        }
+        saveFormDataToCache();
+    }
+
+    function markApostilleQrNumberEdited() {
+        var qrEl = document.getElementById('ap_qr_num');
+        if (!qrEl) return;
+        apQrNumManuallyEdited = qrEl.value !== lastSyncedApIdx;
+        saveFormDataToCache();
+    }
+
     // Синхронизация имени владельца в Апостиле с именем ребенка
     function syncOwnerName() {
         var name = normalizeSpaces(document.getElementById('child_name').value).toUpperCase();
@@ -1350,7 +1392,7 @@
             'mother_name','mother_country','mother_country_other','mother_state','gfather_mat','gmother_mat',
             'twins','dn_number','reg_date_picker','reg_date_text','notes_block','cartor_info','selo_digital','cartor_stamp','certify_block','officer_stamp','sorType','cartor_pay','state_pay','fee_pay','all_pay','receipt_num','custom_reason',
             'city_preset_select','city_custom_name',
-            'blank_number','ap_country','ap_signed_by','ap_role','ap_stamp_owner','ap_city','ap_date','ap_officer','ap_doc_owner'
+            'blank_number','ap_country','ap_signed_by','ap_role','ap_stamp_owner','ap_city','ap_date','ap_officer','ap_idx','ap_doc_owner','ap_qr_num','ap_check_code','ap_bottom_num'
         ];
     }
 
@@ -1777,7 +1819,11 @@
                 ap_city: document.getElementById('ap_city').value,
                 ap_date: document.getElementById('ap_date').value,
                 ap_officer: document.getElementById('ap_officer').value,
-                ap_doc_owner: document.getElementById('ap_doc_owner').value
+                ap_idx: document.getElementById('ap_idx').value,
+                ap_doc_owner: document.getElementById('ap_doc_owner').value,
+                ap_qr_num: document.getElementById('ap_qr_num').value,
+                ap_check_code: document.getElementById('ap_check_code').value,
+                ap_bottom_num: document.getElementById('ap_bottom_num').value
             };
 
             try {
