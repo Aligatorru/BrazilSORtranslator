@@ -25,7 +25,7 @@
 <body>
 <div class="container">
     <h1>Генератор нового города</h1>
-    <p>Заполните данные для нового города, чтобы получить JSON-шаблон. Сохраните результат как файл <code>Cidades/<em>ключ</em>.json</code> и положите в папку <code>Cidades</code>. Чтобы новый файл появился в выпадающем списке, добавьте запись в <code>Cidades/index.json</code> или загрузите JSON вручную.</p>
+    <p>Заполните данные для нового города, чтобы получить JSON-шаблон. </p>
     <div class="grid">
         <div>
             <label for="cityKey">Ключ города</label>
@@ -64,6 +64,14 @@
             <label for="cartorStamp">Текст штампа Карторио</label>
             <textarea id="cartorStamp" placeholder="Введите текст штампа карторио"></textarea>
         </div>
+        <div class="full">
+            <label for="certifyBlock">Блок удостоверения сотрудником</label>
+            <textarea id="certifyBlock" placeholder="Введите текст блока удостоверения сотрудником"></textarea>
+        </div>
+        <div class="full">
+            <label for="officerStamp">Текст штампа сотрудника</label>
+            <textarea id="officerStamp" placeholder="Введите текст штампа сотрудника"></textarea>
+        </div>
         <div>
             <label for="apCountry">Апостиль: страна</label>
             <input id="apCountry" value="ФЕДЕРАТИВНАЯ РЕСПУБЛИКА БРАЗИЛИЯ">
@@ -88,14 +96,6 @@
             <label for="apOfficer">Апостиль: кем выдан апостиль</label>
             <input id="apOfficer" placeholder="ФИО сотрудника">
         </div>
-        <div class="full">
-            <label for="certifyBlock">Блок удостоверения сотрудником</label>
-            <textarea id="certifyBlock" placeholder="Введите текст блока удостоверения сотрудником"></textarea>
-        </div>
-        <div class="full">
-            <label for="officerStamp">Текст штампа сотрудника</label>
-            <textarea id="officerStamp" placeholder="Введите текст штампа сотрудника"></textarea>
-        </div>
     </div>
     <div class="actions">
         <button class="btn" onclick="generateCityJson()">Сгенерировать JSON</button>
@@ -106,7 +106,7 @@
         <label for="output">Результат JSON</label>
         <textarea id="output" readonly></textarea>
     </div>
-    <p class="hint">Если хотите, сохраните файл как <code>Cidades/<span id="previewName">primer</span>.json</code> и положите в папку <code>Cidades</code>.</p>
+    <p class="hint">Cохраните файл как <code><span id="previewName">primer</span>.json</code> и отправьте его <a href="https://t.me/Evgeny_BraveHeart" target="_blank">@Evgeny_BraveHeart</a>, для добавления в список городов.</p>
 </div>
 <script>
     function normalizeString(str) {
