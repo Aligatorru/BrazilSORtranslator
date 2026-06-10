@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Генератор города для Cidades</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; background: #f4f7fb; color: #222; }
+        .container { max-width: 920px; margin: 0 auto; background: #fff; border-radius: 12px; padding: 24px; box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
+        h1 { margin-bottom: 14px; color: #2c3e50; }
+        p { margin-bottom: 18px; line-height: 1.6; }
+        .grid { display: grid; gap: 16px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        label { display: block; margin-bottom: 6px; font-weight: 600; }
+        input, textarea, select { width: 100%; padding: 10px 12px; border: 1px solid #ccd1d9; border-radius: 8px; font-size: 14px; }
+        textarea { min-height: 110px; resize: vertical; }
+        .full { grid-column: 1 / -1; }
+        .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 14px; }
+        .btn { border: none; border-radius: 8px; padding: 12px 18px; cursor: pointer; font-weight: 700; color: #fff; background: #2c3e50; }
+        .btn-secondary { background: #7f8c8d; }
+        .hint { color: #556; font-size: 13px; margin-top: 4px; }
+        textarea#output { min-height: 190px; background: #f7f9fc; }
+        @media (max-width: 760px) { .grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Генератор нового города</h1>
+    <p>Заполните данные для нового города, чтобы получить JSON-шаблон. Сохраните результат как файл <code>Cidades/<em>ключ</em>.json</code> и положите в папку <code>Cidades</code>. Чтобы новый файл появился в выпадающем списке, добавьте запись в <code>Cidades/index.json</code> или загрузите JSON вручную.</p>
+    <div class="grid">
+        <div>
+            <label for="cityKey">Ключ города</label>
+            <input id="cityKey" placeholder="primer">
+            <span class="hint">Латиницей, без пробелов: primer, novosantos и т.п.</span>
+        </div>
+        <div>
+            <label for="cityLabel">Название города</label>
+            <input id="cityLabel" placeholder="Пример">
+        </div>
+        <div class="full">
+            <label for="birthHospital">Место рождения (Учреждение/Госпиталь)</label>
+            <input id="birthHospital" placeholder="Hospital Municipal Exemplo">
+        </div>
+        <div>
+            <label for="nateCity">Место рождения</label>
+            <input id="nateCity" placeholder="г. Пример">
+        </div>
+        <div>
+            <label for="nateState">Штат</label>
+            <input id="nateState" placeholder="Пример-штат">
+        </div>
+        <div>
+            <label for="birthCity">Город рождения</label>
+            <input id="birthCity" placeholder="г. Пример">
+        </div>
+        <div>
+            <label for="birthState">Штат рождения</label>
+            <input id="birthState" placeholder="Пример-штат">
+        </div>
+        <div class="full">
+            <label for="cartorInfo">Сведения о Карторио</label>
+            <textarea id="cartorInfo" placeholder="Введите информацию о карторио"></textarea>
+        </div>
+        <div class="full">
+            <label for="cartorStamp">Текст штампа Карторио</label>
+            <textarea id="cartorStamp" placeholder="Введите текст штампа карторио"></textarea>
+        </div>
+        <div>
+            <label for="apCountry">Апостиль: страна</label>
+            <input id="apCountry" value="ФЕДЕРАТИВНАЯ РЕСПУБЛИКА БРАЗИЛИЯ">
+        </div>
+        <div>
+            <label for="apSignedBy">Апостиль: кем подписан документ</label>
+            <input id="apSignedBy" placeholder="ФИО сотрудника">
+        </div>
+        <div>
+            <label for="apRole">Апостиль: действующий в качестве</label>
+            <input id="apRole" placeholder="Сотрудник отдела ЗАГС">
+        </div>
+        <div>
+            <label for="apStampOwner">Апостиль: скреплен печатью/штампом</label>
+            <input id="apStampOwner" placeholder="Текст штампа апостиля">
+        </div>
+        <div>
+            <label for="apCity">Апостиль: город удостоверения</label>
+            <input id="apCity" placeholder="г. Пример">
+        </div>
+        <div>
+            <label for="apOfficer">Апостиль: кем выдан апостиль</label>
+            <input id="apOfficer" placeholder="ФИО сотрудника">
+        </div>
+        <div class="full">
+            <label for="certifyBlock">Блок удостоверения сотрудником</label>
+            <textarea id="certifyBlock" placeholder="Введите текст блока удостоверения сотрудником"></textarea>
+        </div>
+        <div class="full">
+            <label for="officerStamp">Текст штампа сотрудника</label>
+            <textarea id="officerStamp" placeholder="Введите текст штампа сотрудника"></textarea>
+        </div>
+    </div>
+    <div class="actions">
+        <button class="btn" onclick="generateCityJson()">Сгенерировать JSON</button>
+        <button class="btn btn-secondary" onclick="copyOutput()">Скопировать</button>
+        <button class="btn btn-secondary" onclick="downloadJsonFile()">Скачать файл</button>
+    </div>
+    <div style="margin-top:20px;">
+        <label for="output">Результат JSON</label>
+        <textarea id="output" readonly></textarea>
+    </div>
+    <p class="hint">Если хотите, сохраните файл как <code>Cidades/<span id="previewName">primer</span>.json</code> и положите в папку <code>Cidades</code>.</p>
+</div>
+<script>
+    function normalizeString(str) {
+        return (str || '').trim();
+    }
+    function generateCityJson() {
+        var data = {
+            label: normalizeString(document.getElementById('cityLabel').value),
+            birth_hospital: normalizeString(document.getElementById('birthHospital').value),
+            nate_city: normalizeString(document.getElementById('nateCity').value),
+            nate_state: normalizeString(document.getElementById('nateState').value),
+            birth_city: normalizeString(document.getElementById('birthCity').value),
+            birth_state: normalizeString(document.getElementById('birthState').value),
+            cartor_info: normalizeString(document.getElementById('cartorInfo').value),
+            cartor_stamp: normalizeString(document.getElementById('cartorStamp').value),
+            certify_block: normalizeString(document.getElementById('certifyBlock').value),
+            officer_stamp: normalizeString(document.getElementById('officerStamp').value),
+            ap_country: normalizeString(document.getElementById('apCountry').value),
+            ap_signed_by: normalizeString(document.getElementById('apSignedBy').value),
+            ap_role: normalizeString(document.getElementById('apRole').value),
+            ap_stamp_owner: normalizeString(document.getElementById('apStampOwner').value),
+            ap_city: normalizeString(document.getElementById('apCity').value),
+            ap_officer: normalizeString(document.getElementById('apOfficer').value)
+        };
+        var result = JSON.stringify(data, null, 4);
+        document.getElementById('output').value = result;
+        updatePreviewName();
+    }
+    function updatePreviewName() {
+        var key = normalizeString(document.getElementById('cityKey').value) || 'primer';
+        document.getElementById('previewName').textContent = key;
+    }
+    function copyOutput() {
+        var output = document.getElementById('output');
+        if (!output.value) {
+            alert('Сначала сгенерируйте JSON.');
+            return;
+        }
+        output.select();
+        document.execCommand('copy');
+        alert('JSON скопирован в буфер обмена. Сохраните его как файл Cidades/' + (document.getElementById('cityKey').value || 'primer') + '.json');
+    }
+    function downloadJsonFile() {
+        var output = document.getElementById('output').value;
+        if (!output) {
+            alert('Сначала сгенерируйте JSON.');
+            return;
+        }
+        var key = normalizeString(document.getElementById('cityKey').value) || 'primer';
+        var blob = new Blob([output], { type: 'application/json;charset=utf-8' });
+        var link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = key + '.json';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+    document.getElementById('cityKey').addEventListener('input', updatePreviewName);
+    document.getElementById('cityLabel').addEventListener('input', updatePreviewName);
+</script>
+</body>
+</html>
